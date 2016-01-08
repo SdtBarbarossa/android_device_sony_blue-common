@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# inherit from msm8960-common
-include device/sony/msm8960-common/BoardConfigCommon.mk
+# Inherit from Sony common
+include device/sony/common/BoardConfigCommon.mk
 
 TARGET_SPECIFIC_HEADER_PATH += device/sony/blue-common/include
 
 # Kernel properties
 TARGET_KERNEL_SOURCE := kernel/sony/msm8960
+TARGET_KERNEL_ARCH := arm
 
 # Platform
 TARGET_BOOTLOADER_BOARD_NAME := MSM8960
@@ -54,10 +55,14 @@ WIFI_DRIVER_FW_PATH_AP           := "ap"
 BOARD_USE_SONY_MACUPDATE := true
 
 # Camera
+TARGET_PROVIDES_CAMERA_HAL := true
+#TARGET_USES_AOSP := true
 USE_DEVICE_SPECIFIC_CAMERA := true
+#DEVICE_SPECIFIC_CAMERA_PATH := hardware/sony/camera
 
 # GPS
 BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := $(TARGET_BOARD_PLATFORM)
+BOARD_VENDOR_QCOM_LOC_PDK_FEATURE_SET := true
 TARGET_NO_RPC := true
 
 # RIL
@@ -75,13 +80,17 @@ TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
 BOARD_CUSTOM_BOOTIMG_MK := device/sony/blue-common/custombootimg.mk
 TARGET_RELEASETOOLS_EXTENSIONS := device/sony/blue-common
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_15x24.h\"
-TARGET_RECOVERY_FSTAB = device/sony/blue-common/rootdir/twrp.fstab
+TARGET_RECOVERY_FSTAB = device/sony/blue-common/rootdir/fstab.qcom
 
 # Audio
 BOARD_USES_LEGACY_ALSA_AUDIO := true
 TARGET_USES_QCOM_COMPRESSED_AUDIO := true
 BOARD_HAVE_NEW_QCOM_CSDCLIENT := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
+
+# Audio
+BOARD_USES_ALSA_AUDIO := true
+USE_CUSTOM_AUDIO_POLICY := 1
 
 # Sensors
 SOMC_CFG_SENSORS := true
@@ -114,33 +123,60 @@ TW_INCLUDE_FUSE_EXFAT := true
 TW_MAX_BRIGHTNESS := 255
 TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight_1/brightness"
 TW_SECONDARY_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight_2/brightness"
-TW_CUSTOM_THEME := device/sony/blue-common/recovery/twrp/theme/materialised/play
+#TW_CUSTOM_THEME := device/sony/blue-common/recovery/twrp/theme/materialised/play
+TW_THEME := portrait_hdpi
+RECOVERY_VARIANT := twrp
+
 
 # Include common SE policies
 include device/qcom/sepolicy/sepolicy.mk
 
-BOARD_SEPOLICY_DIRS += \
-    device/sony/blue-common/sepolicy
-
-BOARD_SEPOLICY_UNION += \
-    file_contexts \
-    property_contexts \
-    bootanim.te \
-    illumination.te \
-    init.te \
-    mac_update.te \
-    mediaserver.te \
-    platform_app.te \
-    property.te \
-    rmt_storage.te \
-    secchand.te \
-    surfaceflinger.te \
-    system_app.te \
-    system_monitor.te \
-    system_server.te \
-    tad_static.te \
-    ta_qmi_service.te \
-    updatemiscta.te
-
 # inherit from the proprietary version
 -include vendor/sony/blue-common/BoardConfigVendor.mk
+
+# Disable Block-Based OTA
+BLOCK_BASED_OTA := false
+
+# Architecture
+TARGET_ARCH := arm
+TARGET_CPU_ABI := armeabi-v7a
+TARGET_CPU_ABI2 := armeabi
+TARGET_ARCH_VARIANT := armv7-a-neon
+TARGET_CPU_VARIANT := krait
+
+# Bionic
+MALLOC_IMPL := dlmalloc
+
+# Bluetooth
+BOARD_HAVE_BLUETOOTH := true
+BOARD_HAVE_BLUETOOTH_QCOM := true
+BLUETOOTH_HCI_USE_MCT := true
+
+# Board overrides
+TARGET_NO_BOOTLOADER := true
+TARGET_NO_RADIOIMAGE := true
+
+# Display HAL
+USE_OPENGL_RENDERER := true
+TARGET_USES_ION := true
+TARGET_USES_C2D_COMPOSITION := true
+
+# Font expansion
+EXTENDED_FONT_FOOTPRINT := true
+
+# Lights HAL
+TARGET_PROVIDES_LIBLIGHT := true
+
+# Platform
+TARGET_BOARD_PLATFORM := msm8960
+
+# Power HAL
+TARGET_POWERHAL_VARIANT := qcom
+CM_POWERHAL_EXTENSION := qcom
+
+# QCOM hardware
+BOARD_USES_QCOM_HARDWARE := true
+
+# RIL
+BOARD_PROVIDES_LIBRIL := true
+BOARD_RIL_CLASS := ../../../device/sony/blue-common/ril/

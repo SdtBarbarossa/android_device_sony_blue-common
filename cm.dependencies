@@ -10,5 +10,17 @@
   {
     "repository": "android_hardware_sony_DASH",
     "target_path": "hardware/sony/DASH"
+  },
+  {
+    "repository": "android_external_stlport",
+    "target_path": "external/stlport"
+  },
+  {
+    "repository": "android_device_sony_common",
+    "target_path": "device/sony/common"
+  },
+  {
+    "repository": "android_device_qcom_common",
+    "target_path": "device/qcom/common"
   }
 ]
