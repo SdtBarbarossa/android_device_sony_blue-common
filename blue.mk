@@ -12,13 +12,103 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-TARGET_PROVIDES_ADRENO_DRIVER := true
-# inherit from msm8960-common
-$(call inherit-product, device/sony/msm8960-common/msm8960.mk)
-
 COMMON_PATH := device/sony/blue-common
 
 DEVICE_PACKAGE_OVERLAYS += $(COMMON_PATH)/overlay
+
+# Camera wrapper
+PRODUCT_PACKAGES += \
+    camera.msm8960 \
+    Snap \
+    libshim_qcopt
+
+# Recovery
+PRODUCT_PACKAGES += \
+    keycheck
+
+# Display
+PRODUCT_PACKAGES += \
+    libgenlock \
+    libmemalloc \
+    liboverlay \
+    libqdutils \
+    libtilerenderer \
+    libI420colorconvert
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.hwc.mdpcomp.enable=true
+
+# Lights HAL
+PRODUCT_PACKAGES += \
+    lights.msm8960
+
+# Media profile
+PRODUCT_COPY_FILES += \
+    frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
+    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml \
+    $(COMMON_PATH)/media_codecs.xml:system/etc/media_codecs.xml
+
+# Media
+PRODUCT_PACKAGES += \
+    qcmediaplayer
+
+PRODUCT_BOOT_JARS += \
+    qcmediaplayer
+
+# Omx
+PRODUCT_PACKAGES += \
+    libOmxAacEnc \
+    libOmxAmrEnc \
+    libOmxCore \
+    libOmxEvrcEnc \
+    libOmxQcelp13Enc \
+    libOmxVdec \
+    libOmxVenc \
+    libc2dcolorconvert \
+    libdashplayer \
+    libdivxdrmdecrypt \
+    libmm-omxcore \
+    libstagefrighthw
+
+# Power
+PRODUCT_PACKAGES += \
+    power.qcom
+
+# QCOM
+PRODUCT_PROPERTY_OVERRIDES += \
+    com.qc.hardware=true
+
+# QC Perf
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.extension_library=/vendor/lib/libqc-opt.so
+
+# RIL
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.telephony.ril_class=SonyRIL
+
+# WiFi
+PRODUCT_PROPERTY_OVERRIDES += \
+    wlan.driver.ath=0 \
+    wifi.interface=wlan0 \
+    wifi.supplicant_scan_interval=15
+
+PRODUCT_PACKAGES += \
+    libQWiFiSoftApCfg \
+    libqsap_sdk \
+    libwpa_client \
+    hostapd \
+    dhcpcd.conf \
+    wpa_supplicant \
+    wpa_supplicant.conf
+
+PRODUCT_COPY_FILES += \
+    $(COMMON_PATH)/rootdir/system/etc/hostapd/hostapd_default.conf:system/etc/hostapd/hostapd_default.conf
+
+
+
+TARGET_PROVIDES_ADRENO_DRIVER := true
+
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -43,7 +133,6 @@ PRODUCT_COPY_FILES += \
     $(COMMON_PATH)/rootdir/init.qcom.early_boot.sh:root/init.qcom.early_boot.sh \
     $(COMMON_PATH)/rootdir/init.qcom.sh:root/init.qcom.sh \
     $(COMMON_PATH)/rootdir/init.qcom.rc:root/init.qcom.rc \
-    $(COMMON_PATH)/rootdir/init.qcom.power.rc:root/init.qcom.power.rc \
     $(COMMON_PATH)/rootdir/init.sony.rc:root/init.sony.rc \
     $(COMMON_PATH)/rootdir/fstab.qcom:root/fstab.qcom \
     $(COMMON_PATH)/rootdir/fstab.qcom:recovery/root/fstab.qcom \
@@ -123,10 +212,6 @@ PRODUCT_PACKAGES += \
     Tag \
     com.android.nfc_extras
 
-# Recovery
-PRODUCT_PACKAGES += \
-    extract_elf_ramdisk
-
 # NFCEE access control
 ifeq ($(TARGET_BUILD_VARIANT),user)
     NFCEE_ACCESS_PATH := $(COMMON_PATH)/rootdir/system/etc/nfcee_access.xml
@@ -157,12 +242,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     hci_qcomm_init
 
-# Camera
-PRODUCT_PACKAGES += \
-    camera.sony \
-    camera.msm8960 \
-    libmmcamera_interface \
-    libmmcamera_interface2
+# Camera (old blobs)
+# PRODUCT_PACKAGES += \
+#    camera.sony \
+#    camera.msm8960 \
+#    libmmcamera_interface \
+#    libmmcamera_interface2
 
 # Force use old camera api
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -210,6 +295,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.audio.handset.mic=analog \
     persist.audio.lowlatency.rec=false
 
+# HAL blob compatibility
+PRODUCT_PACKAGES += \
+    libstlport
+
+
 # QCOM Location
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.qc.sdk.izat.premium_enabled=0 \
@@ -234,11 +324,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # OpenGL ES 2.0
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=131072
-
-# Low RAM Optimizations
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.config.low_ram=true \
-    persist.sys.force_highendgfx=true
 
 # Include non-opensource parts
 $(call inherit-product, vendor/sony/blue-common/blue-common-vendor.mk)
