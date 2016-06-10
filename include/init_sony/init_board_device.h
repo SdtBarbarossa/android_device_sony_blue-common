@@ -30,6 +30,9 @@ public:
     // Board: introduction for keycheck
     virtual void introduce_keycheck()
     {
+        // Short vibration
+        vibrate(50);
+
         // LED boot selection colors
         led_color(255, 0, 255);
     }
@@ -44,8 +47,18 @@ public:
     // Board: introduction for Recovery
     virtual void introduce_recovery()
     {
-        // LED Recovery colors
+        // Short vibration
+        vibrate(100);
+
+       // LED Recovery colors
         led_color(255, 100, 0);
+    }
+
+    // Board: finish init execution
+    virtual void finish_init()
+    {
+        // Power off vibrator
+        vibrate(0);
     }
 
     // Board: set led colors
@@ -54,6 +67,12 @@ public:
         write_int("/sys/class/leds/pwr-red/brightness", r);
         write_int("/sys/class/leds/pwr-green/brightness", g);
         write_int("/sys/class/leds/pwr-blue/brightness", b);
+    }
+
+    // Board: set hardware vibrator
+    void vibrate(uint8_t strength)
+    {
+        write_int("/sys/class/timed_output/vibrator/enable", strength);
     }
 };
 
